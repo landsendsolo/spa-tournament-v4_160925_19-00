@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 // This prevents Next.js from creating too many Prisma Client instances in development
 // due to Hot Module Replacement (HMR).
@@ -8,7 +8,7 @@ declare global {
 
 const prisma = global.prisma || new PrismaClient();
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   global.prisma = prisma;
 }
 

@@ -1,11 +1,11 @@
 // src/lib/auth.ts
-import NextAuth from 'next-auth';
-import Credentials from 'next-auth/providers/credentials';
+import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
 // 'User' import removed to fix the warning
-import type { NextAuthConfig } from 'next-auth';
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
-import { PrismaAdapter } from '@auth/prisma-adapter';
+import type { NextAuthConfig } from "next-auth";
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 
 const prisma = new PrismaClient();
 
@@ -15,8 +15,8 @@ export const authConfig: NextAuthConfig = {
   providers: [
     Credentials({
       credentials: {
-        login: { label: 'Mobile or Email', type: 'text' },
-        password: { label: 'Password', type: 'password' },
+        login: { label: "Mobile or Email", type: "text" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.login || !credentials?.password) {
@@ -24,7 +24,7 @@ export const authConfig: NextAuthConfig = {
         }
 
         const login = credentials.login as string;
-        const user = login.includes('@')
+        const user = login.includes("@")
           ? await prisma.user.findUnique({ where: { email: login } })
           : await prisma.user.findUnique({ where: { mobile: login } });
 
@@ -32,7 +32,10 @@ export const authConfig: NextAuthConfig = {
           return null;
         }
 
-        const passwordsMatch = await bcrypt.compare(credentials.password as string, user.passwordHash);
+        const passwordsMatch = await bcrypt.compare(
+          credentials.password as string,
+          user.passwordHash,
+        );
 
         if (passwordsMatch) {
           return user;
@@ -44,7 +47,8 @@ export const authConfig: NextAuthConfig = {
   ],
   callbacks: {
     jwt({ token, user }) {
-      if (user) { // `user` is only available on sign-in
+      if (user) {
+        // `user` is only available on sign-in
         // --- THIS IS THE FIX ---
         // Add checks to satisfy TypeScript
         if (user.id) {
@@ -65,9 +69,9 @@ export const authConfig: NextAuthConfig = {
     },
   },
   pages: {
-    signIn: '/signin',
+    signIn: "/signin",
   },
-  session: { strategy: 'jwt' },
+  session: { strategy: "jwt" },
 };
 
 export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);

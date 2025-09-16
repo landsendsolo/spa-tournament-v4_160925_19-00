@@ -1,7 +1,7 @@
-import type { NextConfig } from 'next';
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  outputFileTracingRoot: '/home/ubuntu/spa-tournament-v4-final',
+  outputFileTracingRoot: "/home/ubuntu/spa-tournament-v4-final",
   images: {
     unoptimized: true,
   },
@@ -13,15 +13,21 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: '/matches',
+        source: "/matches",
         headers: [
-          { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+          {
+            key: "Cache-Control",
+            value: "no-cache, no-store, must-revalidate",
+          },
         ],
       },
       {
-        source: '/draw',
+        source: "/draw",
         headers: [
-          { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+          {
+            key: "Cache-Control",
+            value: "no-cache, no-store, must-revalidate",
+          },
         ],
       },
     ];

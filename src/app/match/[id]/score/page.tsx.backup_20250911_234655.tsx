@@ -1,8 +1,8 @@
-import { auth } from '@/lib/auth';
-import prisma from '@/lib/prisma';
-import { notFound, redirect } from 'next/navigation';
-import { LiveScorecard } from '@/components/scoring/LiveScorecard';
-import type { MatchWithPlayers } from '@/lib/data';
+import { auth } from "@/lib/auth";
+import prisma from "@/lib/prisma";
+import { notFound, redirect } from "next/navigation";
+import { LiveScorecard } from "@/components/scoring/LiveScorecard";
+import type { MatchWithPlayers } from "@/lib/data";
 
 type MatchScorePageProps = {
   params: Promise<{ id: string }>;
@@ -11,7 +11,7 @@ type MatchScorePageProps = {
 export default async function MatchScorePage({ params }: MatchScorePageProps) {
   const session = await auth();
   if (!session?.user) {
-    redirect('/');
+    redirect("/");
   }
   const { id } = await params;
   const match = await prisma.match.findUnique({
@@ -29,9 +29,9 @@ export default async function MatchScorePage({ params }: MatchScorePageProps) {
     <LiveScorecard
       match={match as MatchWithPlayers}
       currentUserId={session.user.id}
-      isAdmin={session.user.role === 'ADMIN'}
+      isAdmin={session.user.role === "ADMIN"}
     />
   );
 }
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";

@@ -1,4 +1,4 @@
-import { PrismaClient, User } from '@prisma/client';
+import { PrismaClient, User } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 type UserWithPlayer = User & { player: { id: string } | null };
 
 async function main() {
-  console.log('Starting the process to fix player links...');
+  console.log("Starting the process to fix player links...");
 
   // 1. Get all users from the database
   const allUsers = await prisma.user.findMany();
@@ -29,8 +29,8 @@ async function main() {
       console.log(`\nFound duplicate entries for: ${name}`);
 
       // Identify the "real" user (has email/pass) and the "placeholder"
-      const realUser = users.find(u => u.email || u.passwordHash);
-      const placeholderUser = users.find(u => !u.email && !u.passwordHash);
+      const realUser = users.find((u) => u.email || u.passwordHash);
+      const placeholderUser = users.find((u) => !u.email && !u.passwordHash);
 
       if (realUser && placeholderUser) {
         console.log(`  - Real user ID: ${realUser.id}`);
@@ -47,13 +47,19 @@ async function main() {
             where: { id: playerToUpdate.id },
             data: { userId: realUser.id },
           });
-          console.log(`  ✅ SUCCESS: Player record ${playerToUpdate.id} is now linked to the real user.`);
+          console.log(
+            `  ✅ SUCCESS: Player record ${playerToUpdate.id} is now linked to the real user.`,
+          );
           fixedCount++;
         } else {
-          console.log(`  - INFO: No player record was linked to the placeholder user. Nothing to fix.`);
+          console.log(
+            `  - INFO: No player record was linked to the placeholder user. Nothing to fix.`,
+          );
         }
       } else {
-        console.log(`  - WARNING: Could not clearly identify real vs. placeholder user for ${name}. Skipping.`);
+        console.log(
+          `  - WARNING: Could not clearly identify real vs. placeholder user for ${name}. Skipping.`,
+        );
       }
     }
   }
@@ -63,7 +69,7 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error('An error occurred:', e);
+    console.error("An error occurred:", e);
     process.exit(1);
   })
   .finally(async () => {

@@ -1,10 +1,10 @@
-import fs from 'fs';
-import BetterSqlite3 from 'better-sqlite3';
+import fs from "fs";
+import BetterSqlite3 from "better-sqlite3";
 
 // --- CONFIGURATION ---
 // IMPORTANT: Update this path to point to your old database backup file.
-const oldDbPath = '/root/temp_backup/app/prisma/tournament.db';
-const outputFile = 'fixtures.json';
+const oldDbPath = "/root/temp_backup/app/prisma/tournament.db";
+const outputFile = "fixtures.json";
 
 // --- SCRIPT ---
 
@@ -15,17 +15,22 @@ function extractFixtures() {
 
   try {
     oldDb = new BetterSqlite3(oldDbPath, { readonly: true });
-    console.log('Database connection successful.');
+    console.log("Database connection successful.");
 
     // As you suggested, this debug step helps confirm the available table names.
-    const tables = oldDb.prepare("SELECT name FROM sqlite_master WHERE type='table';").all();
-    console.log('Available tables:', tables.map((t: any) => t.name));
+    const tables = oldDb
+      .prepare("SELECT name FROM sqlite_master WHERE type='table';")
+      .all();
+    console.log(
+      "Available tables:",
+      tables.map((t: any) => t.name),
+    );
 
     // Query the Fixture table from the old database.
     // NOTE: This assumes the table is named 'Fixture'. Adjust if necessary.
-    const stmt = oldDb.prepare('SELECT * FROM Fixture');
+    const stmt = oldDb.prepare("SELECT * FROM Fixture");
     const fixtures = stmt.all();
-    
+
     console.log(`Found ${fixtures.length} fixtures in the old database.`);
 
     const formattedFixtures = fixtures.map((fixture: any) => ({
@@ -42,27 +47,27 @@ function extractFixtures() {
     }));
 
     // As you recommended, this loop will warn about incomplete data.
-    formattedFixtures.forEach(fixture => {
+    formattedFixtures.forEach((fixture) => {
       if (!fixture.player1Id || !fixture.player2Id) {
-        console.warn(`Fixture ${fixture.id} is missing player IDs—data might be incomplete.`);
+        console.warn(
+          `Fixture ${fixture.id} is missing player IDs—data might be incomplete.`,
+        );
       }
     });
 
     fs.writeFileSync(outputFile, JSON.stringify(formattedFixtures, null, 2));
     console.log(`Successfully extracted fixtures and saved to ${outputFile}`);
-
   } catch (error) {
-    console.error('An error occurred during fixture extraction:');
+    console.error("An error occurred during fixture extraction:");
     console.error(error);
     process.exit(1);
   } finally {
     // As you suggested, we'll close the connection for cleanliness.
     if (oldDb) {
       oldDb.close();
-      console.log('Database connection closed.');
+      console.log("Database connection closed.");
     }
   }
 }
 
 extractFixtures();
-

@@ -1,21 +1,21 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 async function createPlayer() {
   try {
     let user = await prisma.user.findFirst({
-      where: { name: 'Jonny Robertson' },
+      where: { name: "Jonny Robertson" },
     });
 
     if (!user) {
       user = await prisma.user.create({
         data: {
-          name: 'Jonny Robertson',
-          role: 'PLAYER',
+          name: "Jonny Robertson",
+          role: "PLAYER",
         },
       });
-      console.log('Created User:', user.id);
+      console.log("Created User:", user.id);
     }
 
     let player = await prisma.player.findFirst({
@@ -26,15 +26,15 @@ async function createPlayer() {
       player = await prisma.player.create({
         data: {
           userId: user.id,
-          status: 'ACTIVE',
+          status: "ACTIVE",
         },
       });
-      console.log('Created Player:', player.id);
+      console.log("Created Player:", player.id);
     }
 
-    console.log('Player setup complete for Jonny Robertson.');
+    console.log("Player setup complete for Jonny Robertson.");
   } catch (error) {
-    console.error('Error:', error);
+    console.error("Error:", error);
   } finally {
     await prisma.$disconnect();
   }

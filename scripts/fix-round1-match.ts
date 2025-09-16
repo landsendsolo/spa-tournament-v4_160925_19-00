@@ -12,10 +12,7 @@ async function fixRound1Match() {
   const match = await prisma.match.findFirst({
     where: {
       round: 1,
-      OR: [
-        { player1Id: gavinHunter.id },
-        { player2Id: gavinHunter.id },
-      ],
+      OR: [{ player1Id: gavinHunter.id }, { player2Id: gavinHunter.id }],
     },
   });
 

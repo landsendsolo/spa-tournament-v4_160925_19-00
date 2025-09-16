@@ -1,11 +1,11 @@
-import { PrismaClient, Role } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import { PrismaClient, Role } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
   // --- IMPORTANT: CONFIGURE THIS SECTION ---
-  
+
   // 1. Enter the email of the OLD admin user you want to DELETE.
   //    (Use the email you found in the database earlier).
   const oldAdminEmail = "admin@example.com";

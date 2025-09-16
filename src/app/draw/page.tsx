@@ -1,5 +1,5 @@
-import { getMatches, MatchWithPlayers } from '@/lib/data';
-import { TournamentBracket } from '@/components/bracket/TournamentBracket';
+import { getMatches, MatchWithPlayers } from "@/lib/data";
+import { TournamentBracket } from "@/components/bracket/TournamentBracket";
 
 export default async function DrawPage() {
   let matches: MatchWithPlayers[] = [];
@@ -7,12 +7,14 @@ export default async function DrawPage() {
   try {
     matches = await getMatches();
   } catch (e) {
-    error = 'Failed to load tournament data. Please try again later.';
-    console.error('DrawPage Fetch Error:', e);
+    error = "Failed to load tournament data. Please try again later.";
+    console.error("DrawPage Fetch Error:", e);
   }
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
-      <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center">Dumfries Area Draw</h2>
+      <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center">
+        Dumfries Area Draw
+      </h2>
       <div className="mt-8">
         {error ? (
           <div className="text-center py-8">

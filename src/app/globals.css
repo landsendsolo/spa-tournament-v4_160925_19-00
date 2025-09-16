@@ -43,7 +43,8 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-:root { /* Light Theme */
+:root {
+  /* Light Theme */
   --radius: 0.625rem;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
@@ -93,24 +94,25 @@
   --card-foreground: #ffffff;
   --popover: #a3d4db;
   --popover-foreground: #0f172a;
-  --primary: #E5E7EB;
-  --primary-foreground: #1E293B;
-  --winner-text: #0f172a; 
+  --primary: #e5e7eb;
+  --primary-foreground: #1e293b;
+  --winner-text: #0f172a;
   --loser-text: #ffffff;
   --secondary: #93c5fd;
   --secondary-foreground: #0f172a;
-  --muted: #6B9AC4;
+  --muted: #6b9ac4;
   --muted-foreground: #ffffff;
-  --accent: #6B9AC4;
+  --accent: #6b9ac4;
   --accent-foreground: #0f172a;
   --destructive: #ef4444;
   --border: #60a5fa;
   --input: #93c5fd;
-  --ring: #E5E7EB;
+  --ring: #e5e7eb;
   --qualified-card-bg: #2d5a88;
 }
 
-.match { /* Was 'green' */
+.match {
+  /* Was 'green' */
   --background: #006633;
   --foreground: #f0fdf4;
   --card: #005229;
@@ -131,14 +133,15 @@
   --ring: #86efac;
 }
 
-.green { /* Was 'celtic' */
+.green {
+  /* Was 'celtic' */
   --background: #008747;
   --foreground: #ffffff;
   --card: #007a41;
   --card-foreground: #ffffff;
   --popover: #006b38;
   --popover-foreground: #ffffff;
-  --primary: #FFD700;
+  --primary: #ffd700;
   --primary-foreground: #006b38;
   --secondary: #009a53;
   --secondary-foreground: #ffffff;
@@ -147,19 +150,20 @@
   --accent: #009a53;
   --accent-foreground: #ffffff;
   --destructive: #ef4444;
-  --border: #FFD700;
+  --border: #ffd700;
   --input: #009a53;
-  --ring: #FFD700;
+  --ring: #ffd700;
 }
 
-.blue { /* Was 'rangers' */
-  --background: #00529F;
+.blue {
+  /* Was 'rangers' */
+  --background: #00529f;
   --foreground: #ffffff;
   --card: #004a8f;
   --card-foreground: #ffffff;
   --popover: #003f7a;
   --popover-foreground: #ffffff;
-  --primary: #D1D5DB;
+  --primary: #d1d5db;
   --primary-foreground: #003f7a;
   --secondary: #0061b5;
   --secondary-foreground: #ffffff;
@@ -168,9 +172,9 @@
   --accent: #0061b5;
   --accent-foreground: #ffffff;
   --destructive: #ff4d4d;
-  --border: #D1D5DB;
+  --border: #d1d5db;
   --input: #0061b5;
-  --ring: #D1D5DB;
+  --ring: #d1d5db;
 }
 
 @layer base {

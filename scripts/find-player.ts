@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -18,7 +18,9 @@ async function main() {
     console.log("--------------------\n");
     console.log("Please copy the Player ID from the line above.");
   } else {
-    console.error(`Error: Could not find a player in the database named '${targetName}'. Please check the name for typos.`);
+    console.error(
+      `Error: Could not find a player in the database named '${targetName}'. Please check the name for typos.`,
+    );
   }
 }
 

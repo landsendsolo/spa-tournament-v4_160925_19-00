@@ -1,15 +1,21 @@
-'use client';
-import { useState, useTransition, useActionState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { registerPlayer, ActionState } from '@/app/actions/registrationActions';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Eye, EyeOff, Loader2, Home } from 'lucide-react';
-import Link from 'next/link';
+"use client";
+import { useState, useTransition, useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { registerPlayer, ActionState } from "@/app/actions/registrationActions";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff, Loader2, Home } from "lucide-react";
+import Link from "next/link";
 
-const initialState: ActionState = { error: '' };
+const initialState: ActionState = { error: "" };
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -28,7 +34,7 @@ export default function RegisterPage() {
   useEffect(() => {
     if (state.success) {
       const timer = setTimeout(() => {
-        router.push('/signin');
+        router.push("/signin");
       }, 2000);
       return () => clearTimeout(timer);
     }
@@ -39,21 +45,41 @@ export default function RegisterPage() {
       <Card className="w-full max-w-md bg-card/50 backdrop-blur-sm">
         <CardHeader>
           <CardTitle>Player Registration</CardTitle>
-          <CardDescription>Register your account to access the tournament.</CardDescription>
+          <CardDescription>
+            Register your account to access the tournament.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleFormSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
-              <Input id="name" name="name" placeholder="As it appears in the draw" required />
+              <Input
+                id="name"
+                name="name"
+                placeholder="As it appears in the draw"
+                required
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="mobile">Mobile Number</Label>
-              <Input id="mobile" name="mobile" type="tel" placeholder="e.g., 07123456789" required />
+              <Input
+                id="mobile"
+                name="mobile"
+                type="tel"
+                placeholder="e.g., 07123456789"
+                required
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="code">Registration Code - Request in WhatsApp Group</Label>
-              <Input id="code" name="code" placeholder="Your unique 6-character code" required />
+              <Label htmlFor="code">
+                Registration Code - Request in WhatsApp Group
+              </Label>
+              <Input
+                id="code"
+                name="code"
+                placeholder="Your unique 6-character code"
+                required
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
@@ -61,7 +87,7 @@ export default function RegisterPage() {
                 <Input
                   id="password"
                   name="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   placeholder="At least 6 characters"
                   required
                 />
@@ -71,21 +97,37 @@ export default function RegisterPage() {
                   size="icon"
                   className="absolute top-0 right-0 h-full"
                   onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </Button>
               </div>
             </div>
-            {state.error && <p className="text-sm text-destructive">{state.error}</p>}
-            {state.success && <p className="text-sm text-primary">{state.success}</p>}
-            <Button type="submit" className="w-full" disabled={isPending || !!state.success}>
+            {state.error && (
+              <p className="text-sm text-destructive">{state.error}</p>
+            )}
+            {state.success && (
+              <p className="text-sm text-primary">{state.success}</p>
+            )}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isPending || !!state.success}
+            >
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {state.success ? 'Redirecting...' : isPending ? 'Registering...' : 'Register'}
+              {state.success
+                ? "Redirecting..."
+                : isPending
+                  ? "Registering..."
+                  : "Register"}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
-            Already registered?{' '}
+            Already registered?{" "}
             <Link href="/signin" className="underline">
               Sign In
             </Link>

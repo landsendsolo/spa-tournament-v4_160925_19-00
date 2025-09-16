@@ -1,8 +1,8 @@
-import { getLiveAndRecentMatches } from '@/lib/data';
-import type { MatchWithPlayers } from '@/lib/data';
-import { MatchesClient } from '@/components/matches/MatchesClient';
+import { getLiveAndRecentMatches } from "@/lib/data";
+import type { MatchWithPlayers } from "@/lib/data";
+import { MatchesClient } from "@/components/matches/MatchesClient";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export default async function MatchesPage() {
   const matches = await getLiveAndRecentMatches();

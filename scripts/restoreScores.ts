@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 // Main client connects to the new, clean database
 const prisma = new PrismaClient();
@@ -7,24 +7,26 @@ const prisma = new PrismaClient();
 const backupPrisma = new PrismaClient({
   datasources: {
     db: {
-      url: 'file:../prisma/backup.db',
+      url: "file:../prisma/backup.db",
     },
   },
 });
 
 async function main() {
-  console.log('Starting score restoration process...');
+  console.log("Starting score restoration process...");
 
   // --- THIS IS THE FIX (Part 1) ---
   // First, get the ID of the tournament in the NEW database.
   const newTournament = await prisma.tournament.findFirst();
   if (!newTournament) {
-    console.error('Error: No tournament found in the new database. Cannot restore scores.');
+    console.error(
+      "Error: No tournament found in the new database. Cannot restore scores.",
+    );
     return;
   }
   const newTournamentId = newTournament.id;
   console.log(`Found new tournament with ID: ${newTournamentId}`);
-  
+
   const backupMatches = await backupPrisma.match.findMany();
   console.log(`Found ${backupMatches.length} matches in the backup.`);
 
@@ -40,7 +42,7 @@ async function main() {
           tournamentId_drawOrder: {
             tournamentId: newTournamentId, // Use the ID from the new database
             drawOrder: backupMatch.drawOrder,
-          }
+          },
         },
         data: {
           scorePlayer1: backupMatch.scorePlayer1,
@@ -58,13 +60,15 @@ async function main() {
 
   console.log(`✅ Successfully updated ${updatedCount} matches.`);
   if (failedCount > 0) {
-    console.log(`- Skipped ${failedCount} matches that could not be found in the new draw.`);
+    console.log(
+      `- Skipped ${failedCount} matches that could not be found in the new draw.`,
+    );
   }
 }
 
 main()
   .catch((e) => {
-    console.error('An error occurred during the restoration script:', e);
+    console.error("An error occurred during the restoration script:", e);
     process.exit(1);
   })
   .finally(async () => {

@@ -1,5 +1,5 @@
-import prisma from '@/lib/prisma';
-import type { Match, Player, User } from '@prisma/client';
+import prisma from "@/lib/prisma";
+import type { Match, Player, User } from "@prisma/client";
 
 export type MatchWithPlayers = Match & {
   player1: (Player & { user: User }) | null;
@@ -15,25 +15,28 @@ export async function getMatches(): Promise<MatchWithPlayers[]> {
       winner: { include: { user: true } },
     },
     orderBy: {
-      drawOrder: 'asc',
+      drawOrder: "asc",
     },
   });
-  return matches.map(match => ({
+  return matches.map((match) => ({
     ...match,
     scoreDisplay: `${match.scorePlayer1 || 0}-${match.scorePlayer2 || 0}`,
   })) as MatchWithPlayers[];
 }
 
-export async function getLiveAndRecentMatches(options?: { hoursAgo?: number; limit?: number }): Promise<MatchWithPlayers[]> {
+export async function getLiveAndRecentMatches(options?: {
+  hoursAgo?: number;
+  limit?: number;
+}): Promise<MatchWithPlayers[]> {
   const hoursAgo = options?.hoursAgo ?? 24;
   const limit = options?.limit ?? 50;
   const timeWindow = new Date(Date.now() - hoursAgo * 60 * 60 * 1000);
   const matches = await prisma.match.findMany({
     where: {
       OR: [
-        { status: 'IN_PROGRESS' },
+        { status: "IN_PROGRESS" },
         {
-          status: 'COMPLETED',
+          status: "COMPLETED",
           updatedAt: {
             gte: timeWindow,
           },
@@ -46,11 +49,11 @@ export async function getLiveAndRecentMatches(options?: { hoursAgo?: number; lim
       winner: { include: { user: true } },
     },
     orderBy: {
-      updatedAt: 'desc',
+      updatedAt: "desc",
     },
     take: limit,
   });
-  return matches.map(match => ({
+  return matches.map((match) => ({
     ...match,
     scoreDisplay: `${match.scorePlayer1 || 0}-${match.scorePlayer2 || 0}`,
   })) as MatchWithPlayers[];

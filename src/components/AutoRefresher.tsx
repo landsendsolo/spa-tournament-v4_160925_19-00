@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 export function AutoRefresher({ interval = 20000 }: { interval?: number }) {
   const router = useRouter();
@@ -42,12 +42,12 @@ export function AutoRefresher({ interval = 20000 }: { interval?: number }) {
     startTimer();
 
     // Add an event listener to detect when the user switches tabs or navigates away
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     // This is the main cleanup function that runs when the component is truly destroyed
     return () => {
       stopTimer(); // Ensure the timer is stopped
-      document.removeEventListener('visibilitychange', handleVisibilityChange); // Clean up the listener
+      document.removeEventListener("visibilitychange", handleVisibilityChange); // Clean up the listener
     };
   }, [router, interval]); // Dependencies remain the same
 
