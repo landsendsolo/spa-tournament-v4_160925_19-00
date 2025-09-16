@@ -1,0 +1,3 @@
+.next/types/app/match/[id]/score/page.ts(2,24): error TS2306: File '/home/ubuntu/spa-tournament-v4-final/src/app/match/[id]/score/page.tsx' is not a module.
+.next/types/app/match/[id]/score/page.ts(5,29): error TS2306: File '/home/ubuntu/spa-tournament-v4-final/src/app/match/[id]/score/page.tsx' is not a module.
+.next/types/validator.ts(64,39): error TS2306: File '/home/ubuntu/spa-tournament-v4-final/src/app/match/[id]/score/page.tsx' is not a module.

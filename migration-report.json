@@ -1,0 +1,11 @@
+{
+  "migrated": {
+    "players": 44,
+    "matches": 0
+  },
+  "errors": [
+    "Error: \nInvalid `prisma.player.findFirst()` invocation:\n\n{\n  where: {\n    seed: \"cmeoo95tz0002ssr37zy02uhs\"\n          ~~~~~~~~~~~~~~~~~~~~~~~~~~~\n  }\n}\n\nArgument `seed`: Invalid value provided. Expected IntNullableFilter, Int or Null, provided String."
+  ],
+  "warnings": [],
+  "success": false
+}

@@ -1,0 +1,38 @@
+
+> spa-tournament-v4@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.2
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 14.1s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/10) ...
+   Generating static pages (2/10) 
+   Generating static pages (4/10) 
+   Generating static pages (7/10) 
+ ✓ Generating static pages (10/10)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ƒ /                                      906 B         121 kB
+├ ƒ /_not-found                            994 B         103 kB
+├ ƒ /api/auth/[...nextauth]                126 B         102 kB
+├ ƒ /api/matches                           126 B         102 kB
+├ ƒ /dashboard                             906 B         121 kB
+├ ƒ /draw                                6.27 kB         124 kB
+├ ƒ /match/[id]/score                    7.56 kB         136 kB
+├ ƒ /matches                             3.23 kB         117 kB
+├ ƒ /register                            4.13 kB         118 kB
+└ ƒ /signin                               3.9 kB         120 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/255-e3bf15caf1f1e0f9.js       45.7 kB
+  ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+  └ other shared chunks (total)          1.93 kB
+
+
+ƒ  (Dynamic)  server-rendered on demand
+

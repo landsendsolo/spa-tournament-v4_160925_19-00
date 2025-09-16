@@ -1,0 +1,12 @@
+import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
+  // This tells Next.js to allow developer connections from these specific domains/IPs.
+  allowedDevOrigins: [
+    'dumfriespoolleague.co.uk',
+    '82.165.196.73'
+  ],
+};
+
+export default nextConfig;
+

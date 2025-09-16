@@ -1,0 +1,274 @@
+----- Contents of src/app/draw/page.tsx -----
+import { getMatches, MatchWithPlayers } from '@/lib/data';
+import { TournamentBracket } from '@/components/bracket/TournamentBracket';
+
+/**
+ * The server component for the Tournament Draw page.
+ * It fetches all match data and renders the visual bracket.
+ */
+export default async function DrawPage() {
+  let matches: MatchWithPlayers[] = [];
+  let error: string | null = null;
+
+  try {
+    matches = await getMatches();
+  } catch (e) {
+    error = 'Failed to load tournament data. Please try again later.';
+    console.error('DrawPage Fetch Error:', e);
+  }
+
+  return (
+    // The redundant header has been removed from this file.
+    // The main AppHeader is now handled by the RootLayout.
+    <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+      <div className="space-y-4">
+        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+          Tournament Draw
+        </h2>
+        <p className="text-muted-foreground">
+          Click on a 'Live' match to view the live score.
+        </p>
+      </div>
+
+      <div className="mt-8">
+        {error ? (
+          <div className="text-center py-8">
+            <p className="text-destructive font-semibold">Error</p>
+            <p className="text-muted-foreground">{error}</p>
+          </div>
+        ) : (
+          <TournamentBracket matches={matches} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+----- Contents of src/app/matches/page.tsx -----
+import { getLiveAndRecentMatches } from '@/lib/data';
+import { MatchListItem } from '@/components/matches/MatchListItem';
+import type { MatchWithPlayers } from '@/lib/data';
+
+// This is the new page to display a list of live and recent matches.
+export default async function MatchesPage() {
+    const matches = await getLiveAndRecentMatches();
+
+    return (
+        <div>
+            <div className="space-y-2 mb-8">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+                    Live & Recent Matches
+                </h2>
+                <p className="text-muted-foreground">
+                    View matches that are in progress or have recently finished.
+                </p>
+            </div>
+
+            {matches.length === 0 ? (
+                <div className="text-center text-muted-foreground py-12">
+                    <p>There are no live or recently completed matches.</p>
+                </div>
+            ) : (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {matches.map(match => (
+                        <MatchListItem key={match.id} match={match as MatchWithPlayers} />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+----- src/components/bracket not found -----
+----- src/components/matches not found -----
+----- src/components/scoring not found -----
+----- Contents of src/app/globals.css -----
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root { /* Light Theme */
+  --radius: 0.625rem;
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.129 0.042 264.695);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.129 0.042 264.695);
+  --primary: oklch(0.208 0.042 265.755);
+  --primary-foreground: oklch(0.984 0.003 247.858);
+  --secondary: oklch(0.968 0.007 247.896);
+  --secondary-foreground: oklch(0.208 0.042 265.755);
+  --muted: oklch(0.968 0.007 247.896);
+  --muted-foreground: oklch(0.554 0.046 257.417);
+  --accent: oklch(0.968 0.007 247.896);
+  --accent-foreground: oklch(0.208 0.042 265.755);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.929 0.013 255.508);
+  --input: oklch(0.929 0.013 255.508);
+  --ring: oklch(0.704 0.04 256.788);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.129 0.042 264.695);
+}
+
+.dark {
+  --background: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.984 0.003 247.858);
+  --card: oklch(0.208 0.042 265.755);
+  --card-foreground: oklch(0.984 0.003 247.858);
+  --popover: oklch(0.208 0.042 265.755);
+  --popover-foreground: oklch(0.984 0.003 247.858);
+  --primary: oklch(0.929 0.013 255.508);
+  --primary-foreground: oklch(0.208 0.042 265.755);
+  --secondary: oklch(0.279 0.041 260.031);
+  --secondary-foreground: oklch(0.984 0.003 247.858);
+  --muted: oklch(0.279 0.041 260.031);
+  --muted-foreground: oklch(0.704 0.04 256.788);
+  --accent: oklch(0.279 0.041 260.031);
+  --accent-foreground: oklch(0.984 0.003 247.858);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.551 0.027 264.364);
+}
+
+/* --- THEMES HAVE BEEN RENAMED --- */
+.powder { /* Was 'blue' */
+  --background: #B0E0E6;
+  --foreground: #0f172a;
+  --card: #a3d4db;
+  --card-foreground: #0f172a;
+  --popover: #a3d4db;
+  --popover-foreground: #0f172a;
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --secondary: #93c5fd;
+  --secondary-foreground: #0f172a;
+  --muted: #dbeafe;
+  --muted-foreground: #334155;
+  --accent: #dbeafe;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --border: #60a5fa;
+  --input: #93c5fd;
+  --ring: #2563eb;
+}
+
+.match { /* Was 'green' */
+  --background: #006633;
+  --foreground: #f0fdf4;
+  --card: #005229;
+  --card-foreground: #f0fdf4;
+  --popover: #005229;
+  --popover-foreground: #f0fdf4;
+  --primary: #86efac;
+  --primary-foreground: #052e16;
+  --secondary: #004724;
+  --secondary-foreground: #f0fdf4;
+  --muted: #005229;
+  --muted-foreground: #a1a1aa;
+  --accent: #004724;
+  --accent-foreground: #f0fdf4;
+  --destructive: #ef4444;
+  --border: #005229;
+  --input: #004724;
+  --ring: #86efac;
+}
+
+.green { /* Was 'celtic' */
+  --background: #008747;
+  --foreground: #ffffff;
+  --card: #007a41;
+  --card-foreground: #ffffff;
+  --popover: #006b38;
+  --popover-foreground: #ffffff;
+  --primary: #FFD700;
+  --primary-foreground: #006b38;
+  --secondary: #009a53;
+  --secondary-foreground: #ffffff;
+  --muted: #009a53;
+  --muted-foreground: #e2e8f0;
+  --accent: #009a53;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --border: #FFD700;
+  --input: #009a53;
+  --ring: #FFD700;
+}
+
+.blue { /* Was 'rangers' */
+  --background: #00529F;
+  --foreground: #ffffff;
+  --card: #004a8f;
+  --card-foreground: #ffffff;
+  --popover: #003f7a;
+  --popover-foreground: #ffffff;
+  --primary: #D1D5DB;
+  --primary-foreground: #003f7a;
+  --secondary: #0061b5;
+  --secondary-foreground: #ffffff;
+  --muted: #0061b5;
+  --muted-foreground: #e2e8f0;
+  --accent: #0061b5;
+  --accent-foreground: #ffffff;
+  --destructive: #ff4d4d;
+  --border: #D1D5DB;
+  --input: #0061b5;
+  --ring: #D1D5DB;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+----- Contents of src/components/theme-provider.tsx -----
+'use client';
+import * as React from 'react';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import { ThemeProviderProps } from 'next-themes';
+
+export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
+}

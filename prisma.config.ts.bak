@@ -1,0 +1,7 @@
+import { defineConfig } from 'prisma/config';
+
+export default defineConfig({
+  // This tells Prisma to use the 'tsx' runner to execute your TypeScript seed file,
+  // which is the modern and correct way for your project setup.
+  seed: 'tsx prisma/seed.ts',
+});

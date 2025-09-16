@@ -1,103 +1,259 @@
-import Image from "next/image";
+'use server';
+import { auth } from "@/lib/auth";
+import Link from 'next/link';
+import Image from 'next/image';
+import { Button } from "@/components/ui/button";
+import { LogIn, UserPlus, Trophy, ListOrdered, BarChart4 } from "lucide-react";
+import prisma from "@/lib/prisma";
+import type { Match, Player, User as PrismaUser } from "@prisma/client";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Calendar, MapPin } from "lucide-react";
+import type { Session } from "next-auth";
 
-export default function Home() {
+interface MatchWithPlayers extends Match {
+  player1: (Player & { user: PrismaUser }) | null;
+  player2: (Player & { user: PrismaUser }) | null;
+  winner: (Player & { user: PrismaUser }) | null;
+}
+
+interface PlayerData {
+  player: { id: string; user: PrismaUser; } | null;
+  upcomingMatch: MatchWithPlayers | null;
+  recentResults: MatchWithPlayers[];
+}
+
+async function getPlayerData(userId: string): Promise<PlayerData> {
+    const player = await prisma.player.findUnique({
+        where: { userId },
+        include: { user: true },
+    });
+    const allCompletedMatches = player ? await prisma.match.findMany({
+        where: { status: 'COMPLETED', OR: [{ player1Id: player.id }, { player2Id: player.id }] },
+        include: {
+            player1: { include: { user: true } },
+            player2: { include: { user: true } },
+            winner: { include: { user: true } },
+        },
+        orderBy: { updatedAt: 'desc' },
+    }) : [];
+    const upcomingMatch = player ? await prisma.match.findFirst({
+        where: { status: 'PENDING', OR: [{ player1Id: player.id }, { player2Id: player.id }] },
+        include: {
+            player1: { include: { user: true } },
+            player2: { include: { user: true } }
+        },
+        orderBy: { drawOrder: 'asc' },
+    }) : null;
+    return {
+        player,
+        upcomingMatch: upcomingMatch as MatchWithPlayers | null,
+        recentResults: allCompletedMatches
+    };
+}
+
+export default async function DashboardPage() {
+  const session = await auth();
+  if (!session?.user) {
+    return <GuestView />;
+  }
+  if (session.user.role === 'ADMIN') {
+    return <AdminView user={session.user} />;
+  }
+  try {
+      const playerData = await getPlayerData(session.user.id);
+      if (!playerData.player) {
+        return (
+             <div className="text-center py-12">
+               <h2 className="text-2xl font-semibold">Welcome, {session.user.name}</h2>
+               <p className="mt-4 text-muted-foreground">Your player profile could not be found in the tournament data.</p>
+             </div>
+        );
+      }
+      return <PlayerView playerData={playerData} user={session.user} />;
+  } catch (error) {
+      console.error("Error fetching player data for dashboard:", error);
+      return (
+           <div className="text-center py-12">
+             <h2 className="text-2xl font-semibold">Welcome, {session.user.name}</h2>
+             <p className="mt-4 text-destructive">Could not load player data. Please try again later.</p>
+           </div>
+      );
+  }
+}
+
+function GuestView() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+    <div className="flex flex-col items-center justify-center text-center py-12">
+      <Image
+        src="/spa_logo.jpg"
+        alt="SPA Tournament Logo"
+        width={128}
+        height={128}
+        className="rounded-full border border-primary mb-8 object-cover"
+      />
+      <h2 className="text-4xl font-bold mb-4">SPA Scottish Singles Area Draw</h2>
+      <div className="flex flex-col sm:flex-row gap-4 mt-4">
+        <Button asChild size="lg" className="w-full sm:w-auto">
+            <Link href="/draw"><ListOrdered className="mr-2 h-4 w-4" />View Tournament Draw</Link>
+        </Button>
+        <Button asChild size="lg" className="w-full sm:w-auto">
+            <Link href="/matches"><BarChart4 className="mr-2 h-4 w-4" />View Live Matches</Link>
+        </Button>
+      </div>
+      <div className="w-full max-w-lg border-t my-8"></div>
+      <div className="flex flex-col sm:flex-row gap-4 mt-4">
+        <Button asChild size="lg" variant="secondary" className="w-full sm:w-auto">
+            <Link href="/signin"><LogIn className="mr-2 h-4 w-4" />Sign In</Link>
+        </Button>
+        <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
+          <Link href="/register">
+            <UserPlus className="mr-2 h-4 w-4" />
+            Player Registration
+          </Link>
+        </Button>
+      </div>
     </div>
   );
 }
+
+function AdminView({ user }: { user: Session["user"] }) {
+  return (
+    <div>
+      <h2 className="text-3xl font-bold mb-4">Welcome back, Admin {user.name}!</h2>
+      <Card className="bg-card/50 backdrop-blur-sm">
+        <CardHeader>
+          <CardTitle>Admin Tools</CardTitle>
+          <CardDescription>Manage tournaments, users, and system settings.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+          <Button asChild>
+            <Link href="/draw">Manage Tournaments</Link>
+          </Button>
+          <Button disabled>User Management (Coming Soon)</Button>
+          <Button disabled>View Analytics (Coming Soon)</Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function PlayerView({ playerData, user }: { playerData: PlayerData, user: Session["user"] }) {
+    const { player, upcomingMatch, recentResults } = playerData;
+    const wins = recentResults.filter(m => m.winnerId === player!.id).length;
+    const losses = recentResults.length - wins;
+    return (
+        <div>
+          <div className="flex items-center gap-4 mb-8">
+              <Avatar className="h-16 w-16">
+                  <AvatarImage src={user.image || ''} alt={user.name || 'Player'} />
+                  <AvatarFallback>{user.name?.charAt(0).toUpperCase()}</AvatarFallback>
+              </Avatar>
+              <div>
+                  <h2 className="text-3xl font-bold">Welcome back, {user.name}!</h2>
+                  <p className="text-muted-foreground">Here&apos;s your dashboard overview.</p>
+              </div>
+          </div>
+          <div className="grid gap-8 lg:grid-cols-3">
+              <div className="lg:col-span-2 space-y-8">
+                  {upcomingMatch ? (
+                       <Card className="bg-card/50 backdrop-blur-sm">
+                         <CardHeader>
+                             <CardTitle>Your Next Match</CardTitle>
+                         </CardHeader>
+                         <CardContent>
+                             <div className="flex items-center justify-around text-center">
+                                 <div className="flex flex-col items-center gap-2">
+                                     <Avatar className="h-20 w-20">
+                                         <AvatarImage src={upcomingMatch.player1?.user.image || ''} />
+                                         <AvatarFallback>{upcomingMatch.player1?.user.name?.charAt(0).toUpperCase()}</AvatarFallback>
+                                     </Avatar>
+                                     <span className="font-semibold">{upcomingMatch.player1?.user.name}</span>
+                                 </div>
+                                 <div className="text-2xl font-bold text-muted-foreground">VS</div>
+                                  <div className="flex flex-col items-center gap-2">
+                                     <Avatar className="h-20 w-20">
+                                         <AvatarImage src={upcomingMatch.player2?.user.image || ''} />
+                                         <AvatarFallback>{upcomingMatch.player2?.user.name?.charAt(0).toUpperCase()}</AvatarFallback>
+                                     </Avatar>
+                                     <span className="font-semibold">{upcomingMatch.player2?.user.name}</span>
+                                 </div>
+                             </div>
+                             <div className="mt-6 text-center text-muted-foreground space-y-2">
+                                 <p className="flex items-center justify-center gap-2"><Trophy className="h-4 w-4"/> {upcomingMatch.round.replace('_', ' ')}</p>
+                                 <p className="flex items-center justify-center gap-2"><Calendar className="h-4 w-4"/> {upcomingMatch.scheduledTime ? new Date(upcomingMatch.scheduledTime).toLocaleString() : 'TBD'}</p>
+                                 <p className="flex items-center justify-center gap-2"><MapPin className="h-4 w-4"/> {upcomingMatch.location || 'TBD'}</p>
+                             </div>
+                         </CardContent>
+                       </Card>
+                  ) : (
+                       <Card className="bg-card/50 backdrop-blur-sm">
+                         <CardHeader>
+                             <CardTitle>No Upcoming Matches</CardTitle>
+                         </CardHeader>
+                         <CardContent>
+                             <p className="text-muted-foreground">There are no matches scheduled for you at the moment. Check the main Draw for tournament updates.</p>
+                         </CardContent>
+                       </Card>
+                  )}
+                  <Card className="bg-card/50 backdrop-blur-sm">
+                      <CardHeader>
+                          <CardTitle>Recent Results</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                          <Table>
+                              <TableHeader>
+                                  <TableRow>
+                                      <TableHead>Opponent</TableHead>
+                                      <TableHead>Result</TableHead>
+                                      <TableHead>Score</TableHead>
+                                  </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                  {recentResults.map((match: MatchWithPlayers) => {
+                                      const opponent = match.player1Id === player!.id ? match.player2 : match.player1;
+                                      const isWinner = match.winnerId === player!.id;
+                                      const playerScore = match.player1Id === player!.id ? match.scorePlayer1 : match.scorePlayer2;
+                                      const opponentScore = match.player1Id === player!.id ? match.scorePlayer2 : match.scorePlayer1;
+                                      return (
+                                          <TableRow key={match.id}>
+                                              <TableCell>{opponent?.user.name}</TableCell>
+                                              <TableCell className={isWinner ? 'text-green-500' : 'text-red-500'}>
+                                                  {isWinner ? 'Win' : 'Loss'}
+                                              </TableCell>
+                                              <TableCell>{playerScore} - {opponentScore}</TableCell>
+                                          </TableRow>
+                                      );
+                                  })}
+                              </TableBody>
+                          </Table>
+                      </CardContent>
+                  </Card>
+              </div>
+              <div className="lg:col-span-1 space-y-8">
+                  <Card className="bg-card/50 backdrop-blur-sm">
+                      <CardHeader>
+                          <CardTitle>Player Stats</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                          <div className="flex justify-between"><span>Wins:</span> <strong>{wins}</strong></div>
+                          <div className="flex justify-between"><span>Losses:</span> <strong>{losses}</strong></div>
+                      </CardContent>
+                  </Card>
+                  <Card className="bg-card/50 backdrop-blur-sm">
+                      <CardHeader>
+                          <CardTitle>Quick Links</CardTitle>
+                      </CardHeader>
+                      <CardContent className="grid gap-2">
+                        <Button asChild variant="outline"><Link href="/draw">View Full Draw</Link></Button>
+                        <Button variant="outline" disabled>Edit Profile (Coming Soon)</Button>
+                        <Button variant="outline" disabled>Setup Notifications (Coming Soon)</Button>
+                      </CardContent>
+                  </Card>
+              </div>
+          </div>
+        </div>
+    );
+}
+
